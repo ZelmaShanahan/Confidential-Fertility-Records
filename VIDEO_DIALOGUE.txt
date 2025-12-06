@@ -1,0 +1,32 @@
+Video Dialogue: Confidential Fertility Records
+Full English Narration Script
+==============================================
+
+Section 1 - Opening & Problem Statement
+----------------------------------------
+Medical records contain our most sensitive information. What if we could store fertility and reproductive health data on-chain while keeping it completely private? That's exactly what this FHEVM example demonstrates.
+
+
+Section 2 - Project Setup & Structure
+--------------------------------------
+This is a complete, standalone Hardhat-based FHEVM repository. With simple commands, you can install dependencies, compile the contract, and start exploring privacy-preserving healthcare on blockchain.
+
+
+Section 3 - Key Contract Code - Encryption
+-------------------------------------------
+Here's where the magic happens. Using Zama's FHEVM, we encrypt sensitive medical data like age, pregnancy counts, and treatment status. Each value is encrypted using FHE dot as-E-uint or as-E-bool functions, and we set proper access permissions with FHE dot allow-this. The data stays encrypted on-chain forever.
+
+
+Section 4 - Access Control System
+----------------------------------
+The contract implements three-tier access control. System admins authorize healthcare providers. Patients grant specific doctors access to their records. And only authorized parties can read or update the encrypted medical data. Every access is verified through smart contract modifiers.
+
+
+Section 5 - Testing & Results
+------------------------------
+The project includes over forty comprehensive tests covering encryption, access control, emergency access, and multi-patient scenarios. All tests pass, demonstrating production-ready code with proper FHEVM patterns and gas optimization.
+
+
+Section 6 - Closing & Call to Action
+-------------------------------------
+This complete FHEVM example shows how to build privacy-first healthcare applications. Check out the repository for full documentation, automated scaffolding tools, and deployment scripts. Built for the Zama FHEVM Example Hub Bounty.
