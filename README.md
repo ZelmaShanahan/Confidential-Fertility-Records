@@ -10,7 +10,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue)](https://www.typescriptlang.org/)
 [![Tests](https://img.shields.io/badge/tests-40%2B%20passing-success)](test/)
 
-**[Documentation](#documentation) • [Quick Start](#quick-start) • [Video Demo](#video-demonstration) • [Features](#key-features)**
+**[Documentation](#documentation) • [Quick Start](#quick-start) • [Video Demo](https://streamable.com/njldcl) • [Features](#key-features)**
 
 </div>
 
@@ -26,7 +26,7 @@
 - [Project Structure](#project-structure)
 - [Usage Examples](#usage-examples)
 - [Test Suite](#test-suite)
-- [Video Demonstration](#video-demonstration)
+- [Video Demonstration](https://streamable.com/njldcl) Confidential Fertility Records.mp4
 - [Advanced Features](#advanced-features)
 - [Deployment](#deployment)
 - [Security & Privacy](#security-and-privacy)
@@ -35,6 +35,7 @@
 - [Contributing](#contributing)
 - [Resources](#resources)
 - [License](#license)
+- [Live](https://confidential-fertility-records.vercel.app/)
 
 ---
 
@@ -67,7 +68,7 @@ This project is submitted for the **Zama FHEVM Example Hub Bounty (December 2025
 ✅ **Automated Documentation Generation** - GitBook-compatible docs from code annotations
 ✅ **Scaffolding Tool** - CLI for creating new FHEVM examples
 ✅ **Production-Ready** - Deployment scripts, configuration, and best practices
-✅ **Video Demonstration** - 1-minute demo video (required) - [Watch Video](#video-demonstration)
+✅ **Video Demonstration** - 1-minute demo video (required) - [Watch Video](https://streamable.com/njldcl)
 ✅ **Complete Documentation** - Setup guides, architecture docs, and API reference
 
 ### Category & Concepts
@@ -691,7 +692,7 @@ The video demonstrates:
 
 ### Watch the Video
 
-[▶️ **Watch Demo Video**](./ConfidentialFertilityRecords.mp4)
+[▶️ **Watch Demo Video**](https://streamable.com/njldcl)
 
 ---
 
@@ -1342,7 +1343,7 @@ This project addresses all bounty requirements:
 
 ## 🚀 Quick Links
 
-- 📹 **[Video Demo](./ConfidentialFertilityRecords.mp4)** - 1-minute demonstration
+- 📹 **[Video Demo](https://streamable.com/njldcl)** - 1-minute demonstration
 - 📖 **[Setup Guide](SETUP.md)** - Detailed installation instructions
 - 🏗️ **[Architecture](ARCHITECTURE.md)** - System design and patterns
 - 🤝 **[Contributing](CONTRIBUTING.md)** - How to contribute
