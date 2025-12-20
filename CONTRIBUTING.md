@@ -1,501 +1,574 @@
-# Contributing to Private Fertility Records
+# Contributing to FHEVM Examples
 
-Thank you for your interest in contributing to this FHEVM example project! This document provides guidelines for contributing.
-
----
+Thank you for your interest in contributing to this FHEVM example project! This document provides guidelines and instructions for contributing.
 
 ## Table of Contents
 
 - [Code of Conduct](#code-of-conduct)
-- [How Can I Contribute?](#how-can-i-contribute)
-- [Development Setup](#development-setup)
-- [Coding Standards](#coding-standards)
-- [Testing Requirements](#testing-requirements)
-- [Documentation Guidelines](#documentation-guidelines)
+- [Getting Started](#getting-started)
+- [How to Contribute](#how-to-contribute)
+- [Development Workflow](#development-workflow)
+- [Code Standards](#code-standards)
+- [Testing Guidelines](#testing-guidelines)
+- [Documentation](#documentation)
 - [Pull Request Process](#pull-request-process)
-
----
+- [Community](#community)
 
 ## Code of Conduct
 
-### Our Pledge
-
-We are committed to providing a welcoming and inspiring community for everyone. Please be respectful and constructive in all interactions.
-
 ### Our Standards
 
-**Positive behavior includes:**
-- Using welcoming and inclusive language
-- Being respectful of differing viewpoints
-- Gracefully accepting constructive criticism
-- Focusing on what is best for the community
+- **Be Respectful**: Treat all contributors with respect and kindness
+- **Be Constructive**: Provide helpful feedback and suggestions
+- **Be Collaborative**: Work together to improve the project
+- **Be Patient**: Remember that everyone is learning
 
-**Unacceptable behavior includes:**
+### Unacceptable Behavior
+
 - Harassment or discriminatory language
 - Trolling or insulting comments
+- Personal attacks
 - Publishing others' private information
 
----
-
-## How Can I Contribute?
-
-### Reporting Bugs
-
-Before creating a bug report:
-1. **Check existing issues** to avoid duplicates
-2. **Test on the latest version**
-3. **Verify it's reproducible**
-
-When reporting:
-```markdown
-**Description:**
-Clear description of the bug
-
-**Steps to Reproduce:**
-1. Step one
-2. Step two
-3. ...
-
-**Expected Behavior:**
-What should happen
-
-**Actual Behavior:**
-What actually happens
-
-**Environment:**
-- OS: [e.g., macOS 13.0]
-- Node: [e.g., 18.16.0]
-- Hardhat: [e.g., 2.19.0]
-```
-
-### Suggesting Enhancements
-
-Enhancement suggestions are tracked as GitHub issues. Include:
-
-1. **Use case**: Why is this enhancement useful?
-2. **Proposed solution**: How should it work?
-3. **Alternatives**: What other approaches did you consider?
-4. **Additional context**: Mockups, examples, etc.
-
-### Contributing Code
-
-Areas where contributions are welcome:
-
-1. **New FHEVM Patterns**
-   - Encrypted computations
-   - Advanced access control
-   - Privacy-preserving analytics
-
-2. **Test Coverage**
-   - Edge cases
-   - Integration tests
-   - Performance benchmarks
-
-3. **Documentation**
-   - Code comments
-   - Usage examples
-   - Tutorial content
-
-4. **Frontend Improvements**
-   - UI/UX enhancements
-   - Additional features
-   - Mobile responsiveness
-
----
-
-## Development Setup
+## Getting Started
 
 ### Prerequisites
 
-- Node.js >= 18.0.0
-- Git
-- A GitHub account
+Before contributing, ensure you have:
 
-### Setup Steps
+- Node.js >= 18.0.0
+- npm >= 9.0.0
+- Git installed
+- Basic understanding of:
+  - Solidity
+  - Ethereum/Hardhat
+  - FHEVM concepts
+  - Testing with Chai
+
+### Fork and Clone
+
+1. **Fork the repository** on GitHub
+
+2. **Clone your fork**:
+   ```bash
+   git clone https://github.com/your-username/fhevm-anonymous-medical-review
+   cd fhevm-anonymous-medical-review
+   ```
+
+3. **Add upstream remote**:
+   ```bash
+   git remote add upstream https://github.com/original-owner/fhevm-anonymous-medical-review
+   ```
+
+4. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+
+5. **Verify setup**:
+   ```bash
+   npm run compile
+   npm test
+   ```
+
+## How to Contribute
+
+### Types of Contributions
+
+We welcome various types of contributions:
+
+#### 🐛 Bug Reports
+
+Found a bug? Please report it!
+
+**Before reporting:**
+- Check existing issues to avoid duplicates
+- Try to reproduce the bug
+- Gather relevant information (error messages, steps to reproduce)
+
+**Create an issue with:**
+- Clear title and description
+- Steps to reproduce
+- Expected vs actual behavior
+- Environment details (Node version, OS, etc.)
+- Screenshots if applicable
+
+#### 💡 Feature Requests
+
+Have an idea for improvement?
+
+**Create an issue describing:**
+- The problem you're trying to solve
+- Your proposed solution
+- Alternative solutions considered
+- Additional context
+
+#### 📖 Documentation Improvements
+
+Documentation can always be better!
+
+**You can help by:**
+- Fixing typos or grammar
+- Clarifying confusing sections
+- Adding missing information
+- Creating tutorials or examples
+
+#### 🔨 Code Contributions
+
+Want to add features or fix bugs?
+
+**Follow the workflow below** ⬇️
+
+## Development Workflow
+
+### 1. Create a Branch
 
 ```bash
-# 1. Fork the repository on GitHub
+# Update your fork
+git fetch upstream
+git checkout main
+git merge upstream/main
 
-# 2. Clone your fork
-git clone https://github.com/YOUR_USERNAME/ConfidentialFertilityRecords.git
-cd ConfidentialFertilityRecords
-
-# 3. Add upstream remote
-git remote add upstream https://github.com/ORIGINAL_OWNER/ConfidentialFertilityRecords.git
-
-# 4. Install dependencies
-npm install
-
-# 5. Create a branch
+# Create feature branch
 git checkout -b feature/your-feature-name
 
-# 6. Make your changes
-
-# 7. Run tests
-npm test
-
-# 8. Commit and push
-git add .
-git commit -m "Description of changes"
-git push origin feature/your-feature-name
-
-# 9. Open a pull request on GitHub
+# Or for bug fixes
+git checkout -b fix/bug-description
 ```
 
----
+**Branch naming conventions:**
+- `feature/` - New features
+- `fix/` - Bug fixes
+- `docs/` - Documentation changes
+- `refactor/` - Code refactoring
+- `test/` - Test improvements
 
-## Coding Standards
+### 2. Make Your Changes
 
-### Solidity Code
+#### For New FHEVM Examples
 
-#### Style Guide
+1. **Create the contract** in `contracts/`:
+   ```solidity
+   // contracts/YourExample.sol
+   // SPDX-License-Identifier: BSD-3-Clause-Clear
+   pragma solidity ^0.8.24;
 
-Follow the [Solidity Style Guide](https://docs.soliditylang.org/en/latest/style-guide.html):
+   import { FHE, euint8 } from "@fhevm/solidity/lib/FHE.sol";
+   import { ZamaEthereumConfig } from "@fhevm/solidity/config/ZamaConfig.sol";
 
-```solidity
-// ✅ Good
-contract MyContract {
-    uint256 public myVariable;
+   /// @title Your Example Contract
+   /// @notice Brief description
+   contract YourExample is ZamaEthereumConfig {
+       // Implementation with detailed comments
+   }
+   ```
 
-    function myFunction(uint256 _param) external returns (uint256) {
-        require(_param > 0, "Invalid parameter");
-        return _param * 2;
-    }
-}
+2. **Create tests** in `test/`:
+   ```javascript
+   /**
+    * @fileoverview YourExample test suite
+    * @category your-category
+    */
 
-// ❌ Bad
-contract myContract {
-    uint256 public MyVariable;
+   describe("YourExample", function () {
+       // Comprehensive tests
+   });
+   ```
 
-    function MyFunction(uint256 param) external returns(uint256){
-        require(param>0);
-        return param*2;
-    }
-}
-```
+3. **Update automation scripts**:
+   - Add to `automation/create-fhevm-example.js`
+   - Add to `automation/generate-docs.js`
 
-#### Naming Conventions
+4. **Update catalog**:
+   - Add entry to `EXAMPLES_CATALOG.md`
 
-- **Contracts**: PascalCase (`ConfidentialFertilityRecords`)
-- **Functions**: camelCase (`createRecord`)
-- **Variables**: camelCase (`totalRecords`)
-- **Constants**: UPPER_SNAKE_CASE (`MAX_RECORDS`)
-- **Private vars**: underscore prefix (`_internalValue`)
-- **Parameters**: underscore prefix (`_age`)
+#### For Bug Fixes
 
-#### Comments
+1. **Write a failing test** that reproduces the bug
+2. **Fix the bug** in the code
+3. **Verify the test passes**
+4. **Check for side effects** - run all tests
 
-Use NatSpec for all public functions:
+#### For Documentation
 
-```solidity
-/**
- * @notice Creates a new encrypted fertility record
- * @dev Only authorized doctors can create records
- * @param _age Patient's age (must be 18-100)
- * @param _pregnancyCount Number of previous pregnancies
- * @return recordId The ID of the created record
- */
-function createRecord(
-    uint8 _age,
-    uint8 _pregnancyCount
-) external returns (uint256 recordId) {
-    // Implementation
-}
-```
+1. **Edit the relevant .md files**
+2. **Check markdown formatting**
+3. **Verify links work**
+4. **Regenerate docs if needed**: `npm run generate-docs`
 
-### TypeScript Code
+### 3. Test Your Changes
 
-#### Style Guide
-
-```typescript
-// ✅ Good
-async function deployContract(): Promise<Contract> {
-    const Factory = await ethers.getContractFactory("MyContract");
-    const contract = await Factory.deploy();
-    await contract.waitForDeployment();
-    return contract;
-}
-
-// ❌ Bad
-async function deploy_contract() {
-    let factory = await ethers.getContractFactory("MyContract")
-    let contract = await factory.deploy()
-    return contract
-}
-```
-
-#### Use TypeScript Features
-
-```typescript
-// ✅ Good: Proper typing
-interface RecordData {
-    age: number;
-    pregnancyCount: number;
-}
-
-async function createRecord(data: RecordData): Promise<void> {
-    // Implementation
-}
-
-// ❌ Bad: Any types
-async function createRecord(data: any) {
-    // Implementation
-}
-```
-
-### General Principles
-
-1. **DRY (Don't Repeat Yourself)**
-   - Extract common logic into functions
-   - Use inheritance for shared contract code
-
-2. **KISS (Keep It Simple, Stupid)**
-   - Prefer simple, readable code
-   - Avoid clever tricks
-
-3. **Security First**
-   - Always validate inputs
-   - Check for reentrancy
-   - Use SafeMath when needed
-
-4. **Gas Efficiency**
-   - Minimize storage operations
-   - Batch operations when possible
-   - Use appropriate data types
-
----
-
-## Testing Requirements
-
-### Test Coverage
-
-All contributions must include tests:
-
-- **New features**: Add tests covering all functionality
-- **Bug fixes**: Add regression tests
-- **Target coverage**: Aim for 80%+ coverage
-
-### Test Structure
-
-```typescript
-/**
- * @title Feature Name Tests
- * @description What this test suite covers
- * @chapter access-control
- */
-describe("Feature Name", function () {
-    beforeEach(async function () {
-        // Setup
-    });
-
-    describe("Specific Functionality", function () {
-        /**
-         * @test Should do something specific
-         * @description Detailed explanation
-         */
-        it("Should do something specific", async function () {
-            // Arrange
-            const input = 42;
-
-            // Act
-            const result = await contract.someFunction(input);
-
-            // Assert
-            expect(result).to.equal(expectedValue);
-        });
-    });
-});
-```
-
-### Running Tests
+Run the full test suite:
 
 ```bash
-# Run all tests
+# Compile contracts
+npm run compile
+
+# Run tests
 npm test
 
-# Run specific test file
-npx hardhat test test/MyTest.test.ts
+# Check coverage
+npm run coverage
 
-# Run with coverage
-npm run test:coverage
+# Lint Solidity
+npm run lint:sol
 
-# Run with gas reporting
-REPORT_GAS=true npm test
+# Format code
+npm run format
+
+# Full verification
+npm run verify
 ```
 
-### Test Requirements
+All tests must pass before submitting!
 
-- ✅ All tests must pass
-- ✅ No test should be skipped (.skip)
-- ✅ Include both positive and negative test cases
-- ✅ Test edge cases and boundary conditions
-- ✅ Use descriptive test names
+### 4. Commit Your Changes
 
----
+Follow conventional commit format:
 
-## Documentation Guidelines
-
-### Code Comments
-
-#### When to Comment
-
-**DO comment:**
-- Complex logic or algorithms
-- Non-obvious design decisions
-- Security considerations
-- Gas optimization techniques
-
-**DON'T comment:**
-- Obvious code (`i++; // increment i`)
-- Redundant descriptions
-
-#### JSDoc/TSDoc Annotations
-
-For test files, use annotations for documentation generation:
-
-```typescript
-/**
- * @test Test description
- * @description Detailed explanation of what this tests
- * @chapter access-control
- * @category healthcare
- *
- * **FHEVM Concept:** What FHEVM pattern this demonstrates
- * - Additional context
- * - Key learnings
- */
-it("Should demonstrate pattern", async function () {
-    // Test implementation
-});
+```bash
+git add .
+git commit -m "feat: add new example for encrypted voting"
 ```
 
-### README Updates
-
-When adding features:
-1. Update the main README.md
-2. Add usage examples
-3. Update feature list
-4. Document any breaking changes
-
-### Architecture Documentation
-
-For significant changes:
-1. Update ARCHITECTURE.md
-2. Include diagrams if helpful
-3. Explain design decisions
-4. Document trade-offs
-
----
-
-## Pull Request Process
-
-### Before Submitting
-
-**Checklist:**
-- [ ] Code follows style guidelines
-- [ ] All tests pass (`npm test`)
-- [ ] New tests added for new features
-- [ ] Documentation updated
-- [ ] Commits are descriptive and atomic
-- [ ] No console.log or debugging code
-- [ ] No commented-out code
-
-### PR Description Template
-
-```markdown
-## Description
-Brief description of changes
-
-## Motivation and Context
-Why is this change needed? What problem does it solve?
-
-## Type of Change
-- [ ] Bug fix (non-breaking change)
-- [ ] New feature (non-breaking change)
-- [ ] Breaking change
-- [ ] Documentation update
-
-## How Has This Been Tested?
-Describe tests performed
-
-## Checklist
-- [ ] Code follows style guidelines
-- [ ] Tests added/updated
-- [ ] Documentation updated
-- [ ] No breaking changes (or documented)
-
-## Screenshots (if applicable)
-Add screenshots for UI changes
+**Commit message format:**
 ```
+<type>(<scope>): <subject>
 
-### Review Process
+<body>
 
-1. **Automated Checks**: CI/CD runs tests automatically
-2. **Code Review**: Maintainer reviews code
-3. **Feedback**: Address review comments
-4. **Approval**: Maintainer approves PR
-5. **Merge**: Squash and merge into main branch
-
-### Commit Message Format
-
-```
-type(scope): short description
-
-Longer description if needed
-
-BREAKING CHANGE: description of breaking change (if applicable)
+<footer>
 ```
 
 **Types:**
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
-- `test`: Adding/updating tests
+- `style`: Code style changes (formatting)
 - `refactor`: Code refactoring
+- `test`: Test additions or changes
 - `chore`: Maintenance tasks
 
 **Examples:**
+```bash
+git commit -m "feat(contracts): add blind auction example"
+git commit -m "fix(tests): correct access control test assertions"
+git commit -m "docs: update DEVELOPER_GUIDE with new patterns"
+git commit -m "test: add edge cases for medical review"
 ```
-feat(contract): add encrypted comparison function
 
-fix(tests): correct access control test expectations
+### 5. Push to Your Fork
 
-docs(readme): update deployment instructions
+```bash
+git push origin feature/your-feature-name
 ```
 
----
+### 6. Create Pull Request
+
+1. **Go to GitHub** and navigate to your fork
+2. **Click "New Pull Request"**
+3. **Select your branch**
+4. **Fill out the PR template**:
+   - Clear title
+   - Description of changes
+   - Related issues (if any)
+   - Checklist completion
+5. **Submit the PR**
+
+## Code Standards
+
+### Solidity Standards
+
+**Style Guide:**
+- Follow [Solidity Style Guide](https://docs.soliditylang.org/en/latest/style-guide.html)
+- Use 4 spaces for indentation
+- Maximum line length: 120 characters
+- Use descriptive variable names
+
+**Documentation:**
+```solidity
+/// @title Contract Title
+/// @notice What the contract does
+/// @dev Implementation details
+contract Example {
+    /// @notice What this function does
+    /// @param param1 Parameter description
+    /// @return Return value description
+    function exampleFunction(uint256 param1) external returns (bool) {
+        // Implementation
+    }
+}
+```
+
+**FHEVM Best Practices:**
+```solidity
+// ✅ ALWAYS grant permissions
+FHE.allowThis(encryptedValue);
+FHE.allow(encryptedValue, user);
+
+// ✅ ALWAYS validate inputs
+require(plainValue >= 1 && plainValue <= 5, "Invalid range");
+
+// ✅ ALWAYS document FHE operations
+// Encrypt the rating value for privacy preservation
+euint8 encrypted = FHE.asEuint8(rating);
+```
+
+### JavaScript/TypeScript Standards
+
+**Style Guide:**
+- Use 2 spaces for indentation
+- Use semicolons
+- Use async/await over promises
+- Use descriptive variable names
+
+**Test Structure:**
+```javascript
+describe("Contract Name", function () {
+  beforeEach(async function () {
+    // Setup
+  });
+
+  describe("Function Group", function () {
+    /**
+     * Test: Clear test description
+     * Demonstrates: What FHEVM concept
+     */
+    it("should do something specific", async function () {
+      // Arrange
+      const input = 42;
+
+      // Act
+      const result = await contract.function(input);
+
+      // Assert
+      expect(result).to.equal(expected);
+    });
+  });
+});
+```
+
+### Code Quality
+
+**All code must:**
+- Compile without errors
+- Pass all tests
+- Have 80%+ test coverage
+- Pass linting checks
+- Be formatted consistently
+- Include documentation
+
+**Run quality checks:**
+```bash
+npm run verify
+```
+
+## Testing Guidelines
+
+### Test Coverage Requirements
+
+- **Contracts**: 80%+ coverage required
+- **Critical functions**: 100% coverage
+- **Edge cases**: Must be tested
+- **Error conditions**: Must be tested
+
+### Test Categories
+
+Every major contract should have tests for:
+
+1. **Setup and Initialization**
+   ```javascript
+   it("should deploy with correct initial state", async function () {
+     // Test deployment
+   });
+   ```
+
+2. **Core Functionality**
+   ```javascript
+   it("should perform main operation correctly", async function () {
+     // Test main features
+   });
+   ```
+
+3. **Access Control**
+   ```javascript
+   it("should restrict access to authorized users", async function () {
+     // Test permissions
+   });
+   ```
+
+4. **Edge Cases**
+   ```javascript
+   it("should handle boundary conditions", async function () {
+     // Test min/max values
+   });
+   ```
+
+5. **Error Conditions**
+   ```javascript
+   it("should revert on invalid input", async function () {
+     await expect(contract.function(invalid)).to.be.revertedWith("Error message");
+   });
+   ```
+
+6. **FHE Specific**
+   ```javascript
+   it("should properly set FHE permissions", async function () {
+     // Test FHE.allowThis and FHE.allow
+   });
+   ```
+
+### Testing FHEVM Contracts
+
+**Important patterns:**
+
+```javascript
+// Initialize FHEVM instance
+const { FhevmInstance } = require("@zama-ai/fhevm-core");
+const fhevm = await FhevmInstance.getInstance();
+
+// Create encrypted input
+const encryptedInput = await fhevm.createEncryptedInput(
+  await contract.getAddress(),
+  signer.address
+);
+
+// Test decryption
+const result = await fhevm.decrypt(contract.getAddress(), encrypted);
+```
+
+## Documentation
+
+### What to Document
+
+**In Code:**
+- Purpose of contracts and functions
+- Parameters and return values
+- Complex logic explanations
+- FHEVM concept explanations
+- Security considerations
+
+**In Markdown:**
+- How to use features
+- Examples and tutorials
+- API references
+- Troubleshooting guides
+
+### Documentation Standards
+
+**Use clear headings:**
+```markdown
+# Main Title
+## Section Title
+### Subsection Title
+```
+
+**Use code blocks:**
+````markdown
+```solidity
+// Your code here
+```
+````
+
+**Use examples:**
+```markdown
+**Example:**
+```bash
+npm run test
+```
+```
+
+**Link to related docs:**
+```markdown
+See [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) for details.
+```
+
+## Pull Request Process
+
+### PR Checklist
+
+Before submitting, ensure:
+
+- [ ] Code compiles without errors
+- [ ] All tests pass
+- [ ] New tests added for new features
+- [ ] Test coverage meets requirements (80%+)
+- [ ] Code is formatted (`npm run format`)
+- [ ] Linting passes (`npm run lint:sol`)
+- [ ] Documentation is updated
+- [ ] EXAMPLES_CATALOG.md updated (if adding example)
+- [ ] Commit messages follow convention
+- [ ] No merge conflicts with main branch
+
+### PR Template
+
+```markdown
+## Description
+Brief description of changes
+
+## Type of Change
+- [ ] Bug fix
+- [ ] New feature
+- [ ] Documentation update
+- [ ] Code refactoring
+
+## Testing
+- [ ] All tests pass
+- [ ] New tests added
+- [ ] Coverage increased/maintained
+
+## Related Issues
+Closes #123
+
+## Screenshots (if applicable)
+
+## Additional Notes
+```
+
+### Review Process
+
+1. **Automated checks** run (CI/CD)
+2. **Maintainer review** (1-2 reviewers)
+3. **Feedback** may be provided
+4. **Address feedback** by pushing new commits
+5. **Approval** from maintainer(s)
+6. **Merge** into main branch
+
+**Timeline:**
+- Initial review: Within 3-5 days
+- Follow-up reviews: 1-2 days
 
 ## Community
 
 ### Communication Channels
 
-- **GitHub Issues**: Bug reports and feature requests
-- **GitHub Discussions**: General questions and discussions
-- **Pull Requests**: Code contributions
+- **GitHub Issues**: Bug reports, feature requests
+- **GitHub Discussions**: General questions, ideas
+- **Zama Discord**: https://discord.gg/zama
+- **Zama Forum**: https://www.zama.ai/community
 
 ### Getting Help
 
-If you need help:
-1. Check existing documentation (README, ARCHITECTURE, SETUP)
-2. Search existing issues
+**For development questions:**
+1. Check existing documentation
+2. Search closed issues
 3. Ask in GitHub Discussions
-4. Create a new issue if needed
+4. Join Discord #dev-help channel
 
----
+**For FHEVM questions:**
+1. Review [FHEVM Documentation](https://docs.zama.ai/fhevm)
+2. Check [Zama Forum](https://www.zama.ai/community)
+3. Ask in Discord #fhevm channel
 
 ## Recognition
 
 Contributors will be:
-- Listed in CONTRIBUTORS.md (coming soon)
+- Listed in project contributors
 - Mentioned in release notes
-- Credited in project documentation
+- Credited in documentation
+
+Thank you for contributing to FHEVM examples! 🎉
 
 ---
 
-## License
-
-By contributing, you agree that your contributions will be licensed under the MIT License.
-
----
-
-Thank you for contributing to the FHEVM community! 🙏
+**Questions?** Open an issue or join our [Discord](https://discord.gg/zama)

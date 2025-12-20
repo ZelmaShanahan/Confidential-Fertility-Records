@@ -12,7 +12,7 @@
 
 This project demonstrates a **privacy-preserving medical review system** built on FHEVM (Fully Homomorphic Encryption Virtual Machine) for the **Zama December 2025 Bounty Program**. It showcases how healthcare platforms can collect and aggregate doctor ratings while maintaining complete reviewer anonymity and data confidentiality through encrypted computation.
 
-Video : privacy-preserving medical review system.mp4 hhttps://youtu.be/TTABvkiWWKw
+Video : privacy-preserving medical review system.mp4 https://streamable.com/z053ne
 
 Live : https://privacy-preserving-medical-review-s.vercel.app/
 
