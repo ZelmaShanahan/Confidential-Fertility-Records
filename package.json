@@ -1,0 +1,35 @@
+{
+  "name": "anonymous-medical-review-dapp",
+  "version": "1.0.0",
+  "description": "Anonymous Medical Review System using FHE for privacy-preserving doctor ratings",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "compile": "npx hardhat compile",
+    "deploy": "npx hardhat run scripts/deploy.js --network sepolia",
+    "test": "npx hardhat test"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "ethers": "^6.7.1",
+    "@fhevm/solidity": "^0.4.0"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^3.0.2",
+    "hardhat": "^2.17.1"
+  },
+  "keywords": [
+    "blockchain",
+    "fhe",
+    "privacy",
+    "medical",
+    "reviews",
+    "anonymous",
+    "healthcare"
+  ],
+  "author": "Anonymous Medical Review Platform",
+  "license": "MIT"
+}
