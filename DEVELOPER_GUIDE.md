@@ -1,577 +1,658 @@
-# Developer Guide: Creating FHEVM Examples
+# Developer Guide
 
-This guide explains how to create new FHEVM examples and maintain the project for the Zama Bounty Program.
+> Guide for maintaining and extending the Confidential Fertility Records FHEVM example
 
 ## Table of Contents
 
-1. [Creating a New Example](#creating-a-new-example)
-2. [Project Structure](#project-structure)
-3. [Writing Smart Contracts](#writing-smart-contracts)
-4. [Writing Tests](#writing-tests)
-5. [Documentation](#documentation)
-6. [Scaffolding Tool](#scaffolding-tool)
-7. [Testing Your Example](#testing-your-example)
-8. [Updating Dependencies](#updating-dependencies)
-9. [Common Pitfalls](#common-pitfalls)
+- [Overview](#overview)
+- [Project Architecture](#project-architecture)
+- [Adding New Features](#adding-new-features)
+- [Updating Dependencies](#updating-dependencies)
+- [Testing Strategy](#testing-strategy)
+- [Documentation Workflow](#documentation-workflow)
+- [Deployment Procedures](#deployment-procedures)
+- [Common Tasks](#common-tasks)
+- [Troubleshooting](#troubleshooting)
 
-## Creating a New Example
+## Overview
 
-### Step 1: Design Your Example
+This guide is designed for developers who want to:
+- Maintain and update this FHEVM example
+- Extend functionality with new features
+- Update dependencies when new FHEVM versions are released
+- Understand the project architecture and design decisions
 
-Before writing code, decide:
-- What FHEVM concept does it demonstrate? (access control, encryption, decryption, operations)
-- What's the use case? (auction, voting, rating system, etc.)
-- What error cases should be shown?
-- Should it have a video demonstration?
+## Project Architecture
 
-### Step 2: Create the Solidity Contract
+### Directory Structure
 
-Create a new file in `contracts/` directory:
-
-```bash
-touch contracts/YourExample.sol
+```
+ConfidentialFertilityRecords/
+├── contracts/                           # Solidity smart contracts
+│   └── ConfidentialFertilityRecords.sol # Main FHEVM contract
+│
+├── test/                                # Test suites
+│   └── PrivateFertilityRecords.test.ts  # Comprehensive tests with annotations
+│
+├── scripts/                             # Automation and deployment
+│   ├── deploy.ts                        # Contract deployment script
+│   ├── generate-docs.ts                 # Documentation generator
+│   └── create-example.ts                # Project scaffolding tool
+│
+├── docs/                                # Generated documentation
+│   ├── README.md                        # Main documentation
+│   ├── SUMMARY.md                       # GitBook sidebar structure
+│   └── *.md                            # Concept-specific guides
+│
+├── public/                              # Frontend interface
+│   └── index.html                       # Web UI for contract interaction
+│
+├── hardhat.config.ts                    # Hardhat configuration
+├── package.json                         # Dependencies and scripts
+├── tsconfig.json                        # TypeScript configuration
+│
+├── README.md                            # Project overview
+├── ARCHITECTURE.md                      # Architecture documentation
+├── SETUP.md                             # Setup instructions
+├── DEVELOPER_GUIDE.md                   # This file
+├── CONTRIBUTING.md                      # Contribution guidelines
+└── BOUNTY_SUBMISSION.md                 # Competition submission details
 ```
 
-#### Contract Template
+### Key Components
 
-```solidity
-// SPDX-License-Identifier: BSD-3-Clause-Clear
-pragma solidity ^0.8.24;
+#### Smart Contract (`contracts/ConfidentialFertilityRecords.sol`)
 
-import { FHE, euint8, euint32 } from "@fhevm/solidity/lib/FHE.sol";
-import { ZamaEthereumConfig } from "@fhevm/solidity/config/ZamaConfig.sol";
+**Purpose**: Core FHEVM contract demonstrating encrypted healthcare records
 
-/// @title YourExample Contract
-/// @notice Demonstrates [CONCEPT] using FHEVM
-/// @dev Shows both correct usage and common pitfalls
-contract YourExample is ZamaEthereumConfig {
+**Key Features**:
+- Multi-level access control (system + patient)
+- Encrypted medical data storage
+- Emergency access patterns
+- Soft delete functionality
+- Event-based audit trails
 
-    // ============ State Variables ============
+**Design Patterns Used**:
+1. **Separation of Concerns**: Encrypted data vs. public metadata in separate structs
+2. **Role-Based Access Control**: System authorization + patient permission model
+3. **Event Sourcing**: All state changes emit events for audit trails
+4. **Fail-Secure**: Default deny, explicit permissions required
 
-    // Example: encrypted value
-    euint32 private encryptedData;
+#### Test Suite (`test/PrivateFertilityRecords.test.ts`)
 
-    // ============ Functions ============
+**Purpose**: Comprehensive testing with documentation annotations
 
-    /// @notice Function demonstrating [CONCEPT]
-    /// @dev Remember to call FHE.allowThis() for stored encrypted values
-    function exampleFunction(uint32 plainValue) external {
-        euint32 encrypted = FHE.asEuint32(plainValue);
-        // Process encrypted value
-        encryptedData = encrypted;
+**Structure**:
+- 40+ test cases organized by feature area
+- JSDoc/TSDoc annotations for auto-documentation
+- Edge cases and anti-patterns
+- Gas usage benchmarks
 
-        // Grant access permissions
-        FHE.allowThis(encryptedData);
-        FHE.allow(encryptedData, msg.sender);
-    }
-}
-```
-
-#### Key Requirements
-
-1. **Include detailed comments**: Explain what the contract does and why
-2. **Show FHEVM patterns**: Demonstrate correct usage of FHE library
-3. **Include error handling**: Show validation and require statements
-4. **Mark limitations**: Note simplifications made for clarity
-
-### Step 3: Create the Test File
-
-Create a test file in `test/` directory:
-
-```bash
-touch test/YourExample.test.js
-```
-
-#### Test Template
-
-```javascript
+**Annotation Format**:
+```typescript
 /**
- * @fileoverview YourExample Test Suite
- * Demonstrates [CONCEPT] patterns in FHEVM
- * @category access-control
- * @category encrypted-computation
+ * @title Test Title
+ * @description What this test demonstrates
+ * @chapter FHEVM concept (encryption, access-control, etc.)
+ * @category Test category
  */
-
-const { expect } = require("chai");
-const { ethers } = require("hardhat");
-const { FhevmInstance } = require("@zama-ai/fhevm-core");
-
-describe("YourExample", function () {
-    let contract;
-    let owner;
-    let user1;
-    let fhevm;
-
-    beforeEach(async function () {
-        [owner, user1] = await ethers.getSigners();
-
-        // Initialize FHEVM instance
-        const fhevmInst = await FhevmInstance.getInstance();
-        fhevm = fhevmInst;
-
-        // Deploy contract
-        const YourExample = await ethers.getContractFactory("YourExample");
-        contract = await YourExample.deploy();
-        await contract.waitForDeployment();
-    });
-
-    describe("Basic Operations", function () {
-        /**
-         * Test: Successfully process encrypted value
-         * Demonstrates: Creating and storing encrypted values
-         */
-        it("Should process encrypted value correctly", async function () {
-            // Arrange
-            const plainValue = 42;
-
-            // Act
-            const transaction = await contract.exampleFunction(plainValue);
-            await transaction.wait();
-
-            // Assert
-            expect(transaction).to.emit(contract, "ExampleEvent");
-        });
-
-        /**
-         * Test: Reject invalid input
-         * Demonstrates: Validation and error handling
-         */
-        it("Should reject invalid input", async function () {
-            // Arrange
-            const invalidValue = 999;
-
-            // Act & Assert
-            await expect(
-                contract.exampleFunction(invalidValue)
-            ).to.be.revertedWith("Invalid value");
-        });
-    });
-
-    describe("Access Control", function () {
-        /**
-         * Test: Verify FHE permissions are properly set
-         * Demonstrates: FHE.allowThis() and FHE.allow() patterns
-         */
-        it("Should grant proper FHE permissions", async function () {
-            // Test that accessing without permissions fails
-            // Test that accessing with permissions succeeds
-        });
-    });
-});
-```
-
-### Step 4: Add Documentation
-
-Create documentation annotations in your test file:
-
-```javascript
-/**
- * Test: [Clear test name]
- * Demonstrates: [What FHEVM concept does this show?]
- */
-it("should [expected behavior]", async function () {
+it("should do something", async function () {
     // Test implementation
 });
 ```
 
-## Project Structure
+#### Automation Scripts
 
-```
-fhevm-anonymous-medical-review/
-├── contracts/
-│   └── AnonymousMedicalReview.sol    # Main contract
-├── test/
-│   └── MedicalReview.test.js         # Test suite
-├── scripts/
-│   └── deploy.js                     # Deployment script
-├── automation/
-│   ├── create-fhevm-example.js       # Scaffolding tool
-│   └── generate-docs.js              # Documentation generator
-├── docs/                             # Generated documentation
-│   ├── SUMMARY.md                    # GitBook index
-│   ├── quick-start.md                # Quick start guide
-│   ├── api/                          # API documentation
-│   ├── concepts/                     # Concept guides
-│   └── examples/                     # Example documentation
-├── hardhat.config.js                 # Hardhat configuration
-├── package.json                      # Project dependencies
-├── README.md                         # Project overview
-└── DEVELOPER_GUIDE.md               # This file
-```
+**`scripts/generate-docs.ts`**:
+- Parses JSDoc/TSDoc comments from test files
+- Generates markdown documentation
+- Creates GitBook-compatible SUMMARY.md
+- Groups examples by FHEVM concept
 
-## Writing Smart Contracts
+**`scripts/create-example.ts`**:
+- Interactive CLI for creating new FHEVM examples
+- Generates project structure
+- Creates contract and test templates
+- Sets up documentation
 
-### Best Practices
+**`scripts/deploy.ts`**:
+- Automated contract deployment
+- Gas estimation
+- Contract verification on Etherscan
+- Configuration updates
 
-#### 1. Always Grant FHE Permissions
+## Adding New Features
 
-✅ **Correct:**
+### 1. Adding a New Encrypted Field
+
+**Step 1**: Update the contract struct
+
 ```solidity
-FHE.allowThis(encryptedValue);        // Contract permission
-FHE.allow(encryptedValue, msg.sender); // User permission
+// contracts/ConfidentialFertilityRecords.sol
+
+struct EncryptedRecord {
+    euint8 age;
+    euint8 pregnancyCount;
+    // ... existing fields ...
+
+    // NEW: Add your encrypted field
+    euint16 newEncryptedField;
+}
 ```
 
-❌ **Incorrect:**
+**Step 2**: Update the create function
+
 ```solidity
-FHE.allow(encryptedValue, msg.sender); // Missing allowThis!
+function createRecord(
+    uint8 _age,
+    uint8 _pregnancyCount,
+    // ... existing parameters ...
+    uint16 _newField  // NEW parameter
+) external onlyAuthorizedDoctor {
+    // Validate input
+    require(_newField <= 1000, "Invalid new field value");
+
+    // Create record with new field
+    EncryptedRecord memory record = EncryptedRecord({
+        age: FHE.asEuint8(_age),
+        pregnancyCount: FHE.asEuint8(_pregnancyCount),
+        // ... existing fields ...
+        newEncryptedField: FHE.asEuint16(_newField)
+    });
+
+    // Grant permissions
+    FHE.allowThis(record.newEncryptedField);
+    FHE.allow(record.newEncryptedField, msg.sender);
+
+    // ... rest of function ...
+}
 ```
 
-#### 2. Match Encryption Signer
+**Step 3**: Update retrieval function
 
-✅ **Correct:**
+```solidity
+function getEncryptedRecord(uint256 recordId)
+    external
+    view
+    onlyPatientOrDoctor(recordId)
+    returns (
+        bytes32 age,
+        bytes32 pregnancyCount,
+        // ... existing returns ...
+        bytes32 newEncryptedField  // NEW return value
+    )
+{
+    EncryptedRecord memory record = medicalRecords[recordId];
+    return (
+        FHE.toBytes32(record.age),
+        FHE.toBytes32(record.pregnancyCount),
+        // ... existing fields ...
+        FHE.toBytes32(record.newEncryptedField)
+    );
+}
+```
+
+**Step 4**: Add tests
+
 ```typescript
-const enc = await fhevm.createEncryptedInput(contractAddr, alice.address)
-    .add32(123).encrypt();
-await contract.connect(alice).operate(enc.handles[0], enc.inputProof);
+// test/PrivateFertilityRecords.test.ts
+
+/**
+ * @title Test New Encrypted Field
+ * @description Demonstrates encryption and retrieval of the new field
+ * @chapter encryption
+ */
+it("should encrypt and store new field", async function () {
+    const { contract, doctor, patient } = await loadFixture(deployFixture);
+
+    // Authorize doctor
+    await contract.authorizeDoctor(doctor.address);
+
+    // Create record with new field
+    const tx = await contract.connect(doctor).createRecord(
+        28,    // age
+        2,     // pregnancyCount
+        // ... other parameters ...
+        500    // newField (NEW)
+    );
+
+    await expect(tx).to.emit(contract, "RecordCreated");
+
+    // Verify encrypted
+    const record = await contract.getEncryptedRecord(0);
+    expect(record.newEncryptedField).to.not.be.undefined;
+});
 ```
 
-❌ **Incorrect:**
-```typescript
-const enc = await fhevm.createEncryptedInput(contractAddr, alice.address)
-    .add32(123).encrypt();
-await contract.connect(bob).operate(enc.handles[0], enc.inputProof); // Wrong signer!
+**Step 5**: Update documentation
+
+```bash
+# Regenerate documentation
+npm run docs:generate
 ```
 
-#### 3. Validate Input
+### 2. Adding a New Access Control Pattern
+
+**Example**: Adding a "read-only" doctor role
+
+**Step 1**: Add state variable
 
 ```solidity
-modifier onlyValidInput(uint8 value) {
-    require(value >= 1 && value <= 5, "Value out of range");
+// Mapping for read-only access
+mapping(address => mapping(address => bool)) public readOnlyDoctorAccess;
+```
+
+**Step 2**: Create grant/revoke functions
+
+```solidity
+function grantReadOnlyAccess(address doctor) external {
+    require(doctor != address(0), "Invalid doctor address");
+    require(authorizedDoctors[doctor], "Doctor not system-authorized");
+
+    readOnlyDoctorAccess[msg.sender][doctor] = true;
+
+    emit ReadOnlyAccessGranted(doctor, msg.sender);
+}
+
+function revokeReadOnlyAccess(address doctor) external {
+    readOnlyDoctorAccess[msg.sender][doctor] = false;
+
+    emit ReadOnlyAccessRevoked(doctor, msg.sender);
+}
+```
+
+**Step 3**: Create new modifier
+
+```solidity
+modifier onlyReadAccess(uint256 recordId) {
+    RecordMetadata memory metadata = recordMetadata[recordId];
+    require(
+        msg.sender == metadata.patient ||
+        doctorAccess[metadata.patient][msg.sender] ||
+        readOnlyDoctorAccess[metadata.patient][msg.sender],
+        "No read access"
+    );
     _;
 }
+```
 
-function submitValue(uint8 value) external onlyValidInput(value) {
-    // Process value
+**Step 4**: Apply to view functions
+
+```solidity
+function getEncryptedAge(uint256 recordId)
+    external
+    view
+    onlyReadAccess(recordId)  // Uses new modifier
+    returns (bytes32)
+{
+    return FHE.toBytes32(medicalRecords[recordId].age);
 }
 ```
 
-#### 4. Use Meaningful Comments
+## Updating Dependencies
 
-```solidity
-// Good: Explains why
-euint32 encryptedSum = FHE.add(a, b);
-// We add before aggregating to preserve individual privacy
+### When to Update
 
-// Bad: Restates obvious code
-euint32 encryptedSum = FHE.add(a, b); // Add a and b
-```
+- **FHEVM Updates**: New versions of `@fhevm/solidity` or `fhevmjs`
+- **Security Patches**: Critical security updates in dependencies
+- **Hardhat Updates**: New Hardhat versions with improved features
+- **Breaking Changes**: When dependencies have breaking changes
 
-## Writing Tests
+### Update Procedure
 
-### Test Structure
-
-Every test should follow the AAA pattern:
-
-```javascript
-it("should [expected behavior]", async function () {
-    // Arrange: Set up test data
-    const input = 42;
-    const expectedOutput = 84;
-
-    // Act: Perform the action
-    const result = await contract.processValue(input);
-
-    // Assert: Verify the result
-    expect(result).to.equal(expectedOutput);
-});
-```
-
-### Test Coverage Requirements
-
-For each major function:
-- ✅ Test successful execution
-- ✅ Test invalid inputs
-- ✅ Test edge cases (min/max values)
-- ✅ Test access control (who can call)
-- ✅ Test event emission
-- ✅ Test state changes
-
-### Using TSDoc for Documentation
-
-```javascript
-/**
- * Test: Submit review with valid data
- * Demonstrates: Proper encrypted value handling and permission setup
- */
-it("should accept valid review", async function () {
-    // Implementation
-});
-```
-
-## Documentation
-
-### Auto-generated Documentation
-
-Documentation is automatically generated from:
-1. Contract comments (Solidity)
-2. Test file annotations (JavaScript)
-3. README.md content
-
-To regenerate documentation:
+**Step 1**: Check current versions
 
 ```bash
-npm run generate-docs
+npm outdated
 ```
 
-This creates:
-- `SUMMARY.md` - GitBook table of contents
-- `docs/quick-start.md` - Quick start guide
-- `docs/concepts/` - Category-specific concept pages
-- `docs/examples/` - Example documentation pages
-- `docs/api/` - Contract API reference
+**Step 2**: Review changelogs
 
-### Documentation Guidelines
+Check release notes for:
+- Breaking changes
+- New features
+- Security fixes
 
-#### In Contracts
+**Step 3**: Update package.json
 
-```solidity
-/// @title Clear contract name
-/// @notice What this contract does
-/// @dev Implementation notes and warnings
-contract MyContract {
-    /// @notice What this function does
-    /// @param param1 What this parameter is for
-    /// @return What the function returns
-    function myFunction(uint256 param1) external returns (bool) {
-        // Implementation
-    }
+```json
+{
+  "dependencies": {
+    "@fhevm/contracts": "^0.6.0",  // Updated from 0.5.0
+    "fhevmjs": "^0.6.0"             // Updated from 0.5.0
+  }
 }
 ```
 
-#### In Tests
-
-```javascript
-/**
- * @fileoverview What this test file covers
- * @category category1
- * @category category2
- */
-
-/**
- * Test: [What is being tested]
- * Demonstrates: [What FHEVM concepts are shown]
- */
-it("should [expected behavior]", async function () {
-    // Implementation
-});
-```
-
-## Scaffolding Tool
-
-### Using create-fhevm-example.js
-
-The scaffolding tool creates a standalone repository from the current example:
+**Step 4**: Install updates
 
 ```bash
-npm run scaffold <example-name> <category>
+npm install
 ```
 
-Example:
-```bash
-npm run scaffold medical-review "access-control"
-```
-
-This creates a new directory containing:
-- Complete Hardhat setup
-- Your contract and tests
-- Deployment scripts
-- Documentation templates
-- Ready-to-install dependencies
-
-### What the Tool Does
-
-1. Creates directory structure
-2. Copies configuration files
-3. Copies contract and test files
-4. Generates package.json with dependencies
-5. Generates README.md
-6. Generates .gitignore and .env.template
-7. Installs npm dependencies
-
-## Testing Your Example
-
-### Compile the Contract
-
-```bash
-npm run compile
-```
-
-Verify no compilation errors occur.
-
-### Run Tests
+**Step 5**: Run tests
 
 ```bash
 npm test
 ```
 
-All tests must pass.
+**Step 6**: Fix breaking changes
 
-### Check Test Coverage
+If tests fail, update contract code to match new API:
 
-```bash
-npm run coverage
+```solidity
+// OLD API (v0.5.0)
+import { FHE } from "@fhevm/solidity/lib/FHE.sol";
+
+// NEW API (v0.6.0) - hypothetical example
+import { FHEVM } from "@fhevm/solidity/lib/FHEVM.sol";
 ```
 
-Aim for 100% coverage on contracts.
-
-### Gas Reporting
+**Step 7**: Update documentation
 
 ```bash
-npm run test:gas
+npm run docs:generate
 ```
 
-Shows gas costs for each function.
-
-### Local Deployment
+**Step 8**: Test deployment
 
 ```bash
-npm run node              # Terminal 1: Start local node
-npm run deploy:local      # Terminal 2: Deploy contract
+npm run deploy
 ```
 
-## Updating Dependencies
+## Testing Strategy
 
-### When @fhevm/solidity Updates
+### Test Organization
 
-1. Update in `package.json`
-2. Run: `npm install`
-3. Test existing examples:
-   ```bash
-   npm run compile
-   npm test
-   ```
-4. If breaking changes:
-   - Update contracts to use new API
-   - Update tests
-   - Regenerate documentation
-5. Regenerate scaffolded examples
+Tests are organized into categories:
 
-### Version Management
+1. **Deployment Tests** - Contract initialization
+2. **Authorization Tests** - Doctor authorization
+3. **Record Creation Tests** - Creating encrypted records
+4. **Access Control Tests** - Permission management
+5. **Data Update Tests** - Updating encrypted values
+6. **Emergency Access Tests** - Critical care patterns
+7. **Record Retrieval Tests** - Data access
+8. **Deactivation Tests** - Soft delete
+9. **Multi-Patient Tests** - Cross-patient isolation
+10. **Gas Optimization Tests** - Performance benchmarks
 
-Always specify exact versions in automation scripts to ensure consistency:
+### Running Tests
+
+```bash
+# All tests
+npm test
+
+# Specific test suite
+npx hardhat test --grep "Access Control"
+
+# With gas reporting
+REPORT_GAS=true npm test
+
+# With coverage
+npm run test:coverage
+```
+
+### Writing New Tests
+
+**Template**:
+
+```typescript
+/**
+ * @title Test Title
+ * @description Clear description of what this test demonstrates
+ * @chapter FHEVM concept (encryption, access-control, user-decryption, etc.)
+ * @category Test category
+ */
+it("should demonstrate something", async function () {
+    // Setup
+    const { contract, doctor, patient } = await loadFixture(deployFixture);
+
+    // Action
+    await contract.connect(doctor).someFunction();
+
+    // Assertion
+    expect(result).to.equal(expected);
+});
+```
+
+### Common Test Patterns
+
+**Testing Access Control**:
+```typescript
+await expect(
+    contract.connect(unauthorized).restrictedFunction()
+).to.be.revertedWith("Access denied");
+```
+
+**Testing Events**:
+```typescript
+await expect(tx)
+    .to.emit(contract, "RecordCreated")
+    .withArgs(recordId, patientAddress, doctorAddress);
+```
+
+**Testing Encrypted Values**:
+```typescript
+const encryptedValue = await contract.getEncryptedRecord(recordId);
+expect(encryptedValue.age).to.not.be.undefined; // Exists as bytes32
+```
+
+## Documentation Workflow
+
+### Auto-Generating Documentation
+
+The project uses JSDoc/TSDoc annotations in test files to generate documentation.
+
+**Step 1**: Annotate tests
+
+```typescript
+/**
+ * @title Clear Test Title
+ * @description Detailed explanation of what this demonstrates
+ * @chapter FHEVM concept
+ * @category Test category
+ *
+ * **Example:**
+ * ```solidity
+ * // Code snippet
+ * ```
+ *
+ * **Why this matters:** Explanation
+ */
+it("test name", async () => { /* ... */ });
+```
+
+**Step 2**: Generate docs
+
+```bash
+npm run docs:generate
+```
+
+**Step 3**: Review output
+
+Check `docs/` directory for:
+- `README.md` - Main documentation
+- `SUMMARY.md` - GitBook sidebar
+- Concept-specific guides
+
+### Manual Documentation
+
+For architecture, setup, and contributing guides:
+
+1. Edit markdown files directly
+2. Follow existing structure and tone
+3. Include code examples
+4. Add cross-references to related docs
+
+## Deployment Procedures
+
+### Local Deployment (Testing)
+
+```bash
+# Terminal 1: Start Hardhat node
+npm run node
+
+# Terminal 2: Deploy
+npm run deploy
+```
+
+### Testnet Deployment (Sepolia)
+
+**Prerequisites**:
+- Funded testnet account
+- RPC endpoint
+- Etherscan API key
+
+**Step 1**: Configure environment
+
+```bash
+cp .env.example .env
+# Edit .env with your keys
+```
+
+**Step 2**: Deploy
+
+```bash
+npm run deploy:sepolia
+```
+
+**Step 3**: Verify contract
+
+Automatic verification is included in deploy script.
+
+**Step 4**: Update frontend
 
 ```javascript
-const packageJson = {
-    devDependencies: {
-        '@fhevm/solidity': '^0.9.1',    // Pin major version
-        'hardhat': '^2.22.0',
-        // ...
-    }
-};
+// public/index.html
+const CONTRACT_ADDRESS = "0xYourDeployedAddress";
 ```
 
-## Common Pitfalls
+### Mainnet Deployment (Production)
 
-### 1. Forgetting FHE.allowThis()
+**⚠️ Use with caution**
 
-❌ Problem: Contract cannot access encrypted values it stores
-```solidity
-encryptedValue = FHE.asEuint8(42);
-// Missing FHE.allowThis(encryptedValue)!
+**Pre-deployment checklist**:
+- [ ] All tests passing
+- [ ] Security audit completed
+- [ ] Gas optimization verified
+- [ ] Testnet deployment successful
+- [ ] Frontend tested end-to-end
+- [ ] Documentation updated
+- [ ] Emergency procedures documented
+
+**Deploy**:
+```bash
+npm run deploy:mainnet
 ```
 
-✅ Solution:
+## Common Tasks
+
+### Adding a New FHEVM Example
+
+Use the scaffolding tool:
+
+```bash
+npm run scaffold
+```
+
+### Compiling Contracts
+
+```bash
+npm run compile
+```
+
+### Cleaning Build Artifacts
+
+```bash
+npm run clean
+```
+
+### Type Generation
+
+```bash
+npm run typechain
+```
+
+## Troubleshooting
+
+### Issue: Tests Fail with "FHE not defined"
+
+**Solution**: Ensure contract inherits from `ZamaEthereumConfig`
+
 ```solidity
-encryptedValue = FHE.asEuint8(42);
+import { ZamaEthereumConfig } from "@fhevm/solidity/config/ZamaConfig.sol";
+
+contract MyContract is ZamaEthereumConfig {
+    // ...
+}
+```
+
+### Issue: "allowThis failed" Error
+
+**Solution**: Always grant contract permission before user permission
+
+```solidity
+// ✅ CORRECT order
 FHE.allowThis(encryptedValue);
+FHE.allow(encryptedValue, msg.sender);
+
+// ❌ WRONG - missing allowThis
+FHE.allow(encryptedValue, msg.sender);
 ```
 
-### 2. Mismatched Encryption Signers
+### Issue: Gas Estimation Fails
 
-❌ Problem: User encrypts with their address, sends as different address
-```javascript
-const enc = await fhevm.createEncryptedInput(contract, alice.address)
-    .add32(123).encrypt();
-await contract.connect(bob).process(enc.handles[0], enc.inputProof);
+**Solution**: FHE operations are expensive. Ensure sufficient gas limit
+
+```typescript
+const tx = await contract.createRecord(..., {
+    gasLimit: 5000000  // Explicit gas limit
+});
 ```
 
-✅ Solution: Same signer throughout
-```javascript
-const enc = await fhevm.createEncryptedInput(contract, alice.address)
-    .add32(123).encrypt();
-await contract.connect(alice).process(enc.handles[0], enc.inputProof);
+### Issue: Deployment Verification Fails
+
+**Solution**: Wait 5 confirmations before verification
+
+```typescript
+await tx.wait(5);  // Wait for 5 confirmations
+// Then verify
 ```
 
-### 3. View Functions with Encrypted Values
+## Best Practices
 
-❌ Problem: Trying to return encrypted values from view functions
-```solidity
-function getSecret() external view returns (euint8) {
-    return encryptedSecret; // Not allowed!
-}
-```
+1. ✅ Always validate inputs before encryption
+2. ✅ Use appropriate encrypted types (euint8, euint16, euint32)
+3. ✅ Grant both contract and user permissions
+4. ✅ Write comprehensive tests with annotations
+5. ✅ Document all access control changes
+6. ✅ Emit events for audit trails
+7. ✅ Follow the fail-secure principle
+8. ✅ Test on testnet before mainnet
+9. ✅ Keep dependencies updated
+10. ✅ Regenerate docs after changes
 
-✅ Solution: Use non-view functions or requestDecryption
-```solidity
-function getSecret() external returns (euint8) {
-    FHE.allowThis(encryptedSecret);
-    return encryptedSecret;
-}
-```
-
-### 4. Missing Input Validation
-
-❌ Problem: Accepting invalid user input
-```solidity
-function rate(uint8 rating) external {
-    euint8 enc = FHE.asEuint8(rating); // What if rating > 5?
-}
-```
-
-✅ Solution: Validate before encryption
-```solidity
-function rate(uint8 rating) external {
-    require(rating >= 1 && rating <= 5, "Rating must be 1-5");
-    euint8 enc = FHE.asEuint8(rating);
-}
-```
-
-### 5. Not Handling Decryption Callbacks
-
-❌ Problem: Forgetting to implement callback for requestDecryption
-```solidity
-FHE.requestDecryption(ciphertexts, this.processResult.selector);
-// Missing processResult function!
-```
-
-✅ Solution: Implement the callback function
-```solidity
-function processResult(
-    uint256 requestId,
-    bytes memory cleartexts,
-    bytes memory decryptionProof
-) external {
-    FHE.checkSignatures(requestId, cleartexts, decryptionProof);
-    // Process decrypted values
-}
-```
-
-## Submission Checklist
-
-Before submitting your example:
-
-- ✅ Contract compiles without errors
-- ✅ All tests pass
-- ✅ Test coverage >= 80%
-- ✅ Documentation is clear and complete
-- ✅ README is up-to-date
-- ✅ Code follows existing patterns
-- ✅ No hardcoded values (use constants)
-- ✅ All FHE permissions properly set
-- ✅ Input validation implemented
-- ✅ Video demonstration recorded
-
-## Additional Resources
+## Resources
 
 - [FHEVM Documentation](https://docs.zama.ai/fhevm)
-- [Solidity API Reference](https://docs.zama.ai/fhevm/solidity-api)
-- [Zama Bounty Program](https://github.com/zama-ai/bounty-program)
-- [Community Forum](https://www.zama.ai/community)
-- [Discord Support](https://discord.gg/zama)
+- [Hardhat Documentation](https://hardhat.org/docs)
+- [Solidity Best Practices](https://docs.soliditylang.org/en/latest/security-considerations.html)
+- [Project README](README.md)
+- [Architecture Guide](ARCHITECTURE.md)
+- [Setup Guide](SETUP.md)
 
-## Questions?
+## Support
 
-Reach out to the Zama community:
-- Discord: https://discord.gg/zama
-- Forum: https://www.zama.ai/community
-- GitHub Issues: Open an issue in the project repository
+For questions or issues:
+
+1. Check this guide first
+2. Review FHEVM documentation
+3. Check existing GitHub issues
+4. Ask in the Zama community forum
+
+---
+
+**Last Updated**: December 2025
+**FHEVM Version**: 0.5.0
+**Hardhat Version**: 2.19.0
